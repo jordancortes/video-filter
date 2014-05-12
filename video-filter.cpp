@@ -26,48 +26,58 @@ void extract_images( char *video_path )
 
 int main( int argc, char* argv[] )
 {
+    // if no arguments were given
     if ( 1 == argc )
     {
         printf( "Missing video source.\n" );
         printf( "Usage: %s [ parameters ] <VIDEO_NAME>\n", argv[0] );
     }
+    // if too much arguments were given
     else if ( 7 <= argc )
     {
         printf( "Too much arguments!\n" );
     }
+    // if just the video path was given as parameter
     else if ( 2 == argc )
     {
         // the last parameter is the video path
         extract_images( argv[argc - 1] );
     }
+    // if one or more extra parameters were given
     else
     {
         bool parameters_correct = true;
         std::string actual_parameter;
         int param = 1;
 
-        // check for paratemers
+        // check for paratemers while these are correct
         while ( parameters_correct &&
                param < argc - 1 )
         {
+            // parse parameter at index param
             actual_parameter = std::string( argv[param] );
 
+            // if parameter is for filter
             if ( 0 == actual_parameter.compare( "--filter" ) )
             {
                 /* code */
             }
+            // if parameter is for video-threads
             else if ( 0 == actual_parameter.compare( "--video-threads" ) )
             {
                 /* code */
             }
+            // if parameter is unavailable
             else
             {
                 parameters_correct = false;
             }
 
+            // jump to next parameter
             param += 2;
         }
 
+        // if some parameter were wrong
         if ( !parameters_correct )
         {
             printf( "Argument %s is invalid!\n", actual_parameter.c_str() );
