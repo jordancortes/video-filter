@@ -3,6 +3,9 @@
 #include <algorithm>
 #include <string>
 
+#define VALID   0
+#define INVALID 1
+
 std::string _code;
 std::string _filter;
 int _num_threads;
@@ -68,10 +71,10 @@ int checkParamters( int argc, char* argv[] )
     if ( !parameters_correct )
     {
         printf( "Argument %s is invalid!\n", actual_parameter.c_str() );
-        return 1;
+        return INVALID;
     }
 
-    return 0;
+    return VALID;
 }
 
 int main( int argc, char* argv[] )
@@ -96,14 +99,14 @@ int main( int argc, char* argv[] )
     // if one or more extra parameters were given
     else
     {
-        if ( 1 == checkParamters( argc, argv ) )
+        if ( INVALID == checkParamters( argc, argv ) )
         {
-            return 1;
+            return INVALID;
         }
 
         // the last parameter is the video path
         extractImages( argv[argc - 1] );
     }
 
-    return 0;
+    return VALID;
 }
