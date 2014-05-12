@@ -25,6 +25,55 @@ void extract_images( char *video_path )
     system( _code.c_str() );
 }
 
+int checkParamters( int argc, char* argv[] )
+{
+    bool parameters_correct = true;
+    std::string actual_parameter;
+    int param = 1;
+
+    // check for paratemers while these are correct
+    while ( parameters_correct &&
+           param < argc - 1 )
+    {
+        // parse parameter at index param
+        actual_parameter = std::string( argv[param] );
+
+        // convert parameter to lower case for comparison
+        std::transform( actual_parameter.begin(),
+                        actual_parameter.end(),
+                        actual_parameter.begin(),
+                        ::tolower);
+
+        // if parameter is for filter
+        if ( 0 == actual_parameter.compare( "--filter" ) )
+        {
+            /* code */
+        }
+        // if parameter is for video-threads
+        else if ( 0 == actual_parameter.compare( "--video-threads" ) )
+        {
+            /* code */
+        }
+        // if parameter is unavailable
+        else
+        {
+            parameters_correct = false;
+        }
+
+        // jump to next parameter
+        param += 2;
+    }
+
+    // if some parameter were wrong
+    if ( !parameters_correct )
+    {
+        printf( "Argument %s is invalid!\n", actual_parameter.c_str() );
+        return 1;
+    }
+
+    return 0;
+}
+
 int main( int argc, char* argv[] )
 {
     // if no arguments were given
@@ -47,47 +96,8 @@ int main( int argc, char* argv[] )
     // if one or more extra parameters were given
     else
     {
-        bool parameters_correct = true;
-        std::string actual_parameter;
-        int param = 1;
-
-        // check for paratemers while these are correct
-        while ( parameters_correct &&
-               param < argc - 1 )
+        if ( 1 == checkParamters( argc, argv ) )
         {
-            // parse parameter at index param
-            actual_parameter = std::string( argv[param] );
-
-            // convert parameter to lower case for comparison
-            std::transform( actual_parameter.begin(),
-                            actual_parameter.end(),
-                            actual_parameter.begin(),
-                            ::tolower);
-
-            // if parameter is for filter
-            if ( 0 == actual_parameter.compare( "--filter" ) )
-            {
-                /* code */
-            }
-            // if parameter is for video-threads
-            else if ( 0 == actual_parameter.compare( "--video-threads" ) )
-            {
-                /* code */
-            }
-            // if parameter is unavailable
-            else
-            {
-                parameters_correct = false;
-            }
-
-            // jump to next parameter
-            param += 2;
-        }
-
-        // if some parameter were wrong
-        if ( !parameters_correct )
-        {
-            printf( "Argument %s is invalid!\n", actual_parameter.c_str() );
             return 1;
         }
 
