@@ -13,7 +13,7 @@ int _num_threads;
  @param video_path
    Path to the video file.
  */
-void extract_images( char *video_path )
+void extractImages( char *video_path )
 {
     // make command code
     _code = std::string( "ffmpeg -i " ) +
@@ -91,7 +91,7 @@ int main( int argc, char* argv[] )
     else if ( 2 == argc )
     {
         // the last parameter is the video path
-        extract_images( argv[argc - 1] );
+        extractImages( argv[argc - 1] );
     }
     // if one or more extra parameters were given
     else
@@ -102,7 +102,7 @@ int main( int argc, char* argv[] )
         }
 
         // the last parameter is the video path
-        extract_images( argv[argc - 1] );
+        extractImages( argv[argc - 1] );
     }
 
     return 0;
