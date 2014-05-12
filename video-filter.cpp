@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <algorithm>
 #include <string>
 
 std::string _code;
@@ -56,6 +57,12 @@ int main( int argc, char* argv[] )
         {
             // parse parameter at index param
             actual_parameter = std::string( argv[param] );
+
+            // convert parameter to lower case for comparison
+            std::transform( actual_parameter.begin(),
+                            actual_parameter.end(),
+                            actual_parameter.begin(),
+                            ::tolower);
 
             // if parameter is for filter
             if ( 0 == actual_parameter.compare( "--filter" ) )
