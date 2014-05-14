@@ -28,19 +28,7 @@ to the video, with the filter already applied.
 
 2. To run the program:
 
-        ./video-filter [ parameters ] <VIDEO_NAME>
-            VIDEO_NAME :    path to video file.
-                            Formats tested: .mov
-
-## Parameters list
-
-    --filter <TYPE>
-        TYPE :          filter type. See chart above.
-
-    --video-threads <NUMBER>
-        NUM_THREADS :   amount of threads used to process the video.
-                        The default value is 1.
-                        The maximum is checked against the maximum number of threads supported by the computer.
+        ./video-filter
 
 ## Third Party Software
 * [JZON](https://code.google.com/p/jzon/) to parse JSON files.
