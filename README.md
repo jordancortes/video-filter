@@ -7,7 +7,7 @@ to the video, with the filter already applied.
 ## Installation
 1. Install Brew:
 
-        ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)
+        ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
 
 2. Install ffmpeg:
 
@@ -41,6 +41,9 @@ to the video, with the filter already applied.
         NUM_THREADS :   amount of threads used to process the video.
                         The default value is 1.
                         The maximum is checked against the maximum number of threads supported by the computer.
+
+## Third Party Software
+* [JZON](https://code.google.com/p/jzon/) to parse JSON files.
 
 ## License
 Video Filter is provided under the [MIT License](LICENSE.md).
