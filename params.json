@@ -1,0 +1,9 @@
+{
+    "filename" : "/Users/Jordan/Desktop/ScreenFlow.mp4",
+    "filter" : "sepia",
+    "threads" :
+    {
+        "video": 1,
+        "images": 2
+    }
+}
