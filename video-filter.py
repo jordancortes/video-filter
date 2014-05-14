@@ -6,10 +6,27 @@ import os
 
 
 CPUCoresCount = multiprocessing.cpu_count() # Get CPU Cores
+numThreads = 1
 paramFile = 'params.json' # filename for parameters
 duration = ''
 frames = ''
 
+class myThread (threading.Thread):
+    def __init__(self, threadID, name, counter):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.counter = counter
+    def run(self):
+        print self.name
+        size = ( duration / numThreads )
+        start = size * self.threadID
+        end = ( size * self.threadID ) + size
+        subprocess.call(
+           ["ffmpeg",
+           "-i", "./resources/drag_codekid.mov",
+           "-r", frames, "-ss", start, "-t", end,
+           "./resources/video-filter-%03d.jpeg"])
 
 def checkParameters(params):
     if 'filename' not in params:
