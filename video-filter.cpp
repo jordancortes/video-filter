@@ -1,6 +1,8 @@
 #include "Jzon.h"
 #include <string>
 #include <iostream>
+#include <sstream>
+#include <vector>
 
 #define SUCCESS 0
 #define ERROR   1
@@ -55,6 +57,7 @@ int checkParameters(Jzon::Object params)
     return SUCCESS;
 }
 
+
 std::string exec(const char* cmd)
 {
     char buffer[128];
@@ -81,17 +84,60 @@ std::string exec(const char* cmd)
     return result;
 }
 
+
+std::vector<std::string> &split(const std::string &s,
+                                char delim,
+                                std::vector<std::string> &elems)
+{
+    std::stringstream ss(s);
+    std::string item;
+
+    while (std::getline(ss, item, delim))
+    {
+        elems.push_back(item);
+    }
+
+    return elems;
+}
+
+
+std::vector<std::string> split(const std::string &s,
+                               char delim)
+{
+    std::vector<std::string> elems;
+
+    split(s, delim, elems);
+
+    return elems;
+}
+
+
 void checkVideInfo(Jzon::Object params, float *duration, float *frames)
 {
-    const char *command = "python check_info.py";
+    const char *check_info_cmd;
+    std::vector<std::string> info_result, times;
+    std::string::size_type string_size_type;
 
-    std::cout << exec(command) << std::endl;
+    check_info_cmd = "python check_info.py";
+
+    info_result = split(exec(check_info_cmd), ',');
+
+    // set duration (in seconds)
+    times = split(info_result[0], ':');
+    *duration += std::stof(times[0]) * 3600; // hours
+    *duration += std::stof(times[1]) * 60; // minutes
+    *duration += std::stof(times[2]); // seconds
+
+    // set frames
+    *frames = std::stof(info_result[1], &string_size_type);
 }
+
 
 int main(int argc, char* argv[])
 {
     Jzon::Object params;
-    float duration, frames;
+    float duration = 0.0;
+    float frames = 0.0;
 
     // Read parameters from the JSON file
     Jzon::FileReader::ReadFile("params.json", params);
