@@ -124,9 +124,9 @@ void checkVideInfo(Jzon::Object params, float *duration, float *frames)
 
     // set duration (in seconds)
     times = split(info_result[0], ':');
-    *duration += std::stof(times[0]) * 3600; // hours
-    *duration += std::stof(times[1]) * 60; // minutes
-    *duration += std::stof(times[2]); // seconds
+    *duration += std::stof(times[0], &string_size_type) * 3600; // hours
+    *duration += std::stof(times[1], &string_size_type) * 60; // minutes
+    *duration += std::stof(times[2], &string_size_type); // seconds
 
     // set frames
     *frames = std::stof(info_result[1], &string_size_type);
