@@ -55,16 +55,29 @@ int checkParameters(Jzon::Object params)
     return SUCCESS;
 }
 
-std::string exec(const char* cmd) {
-    FILE* pipe = popen(cmd, "r");
-    if (!pipe) return "ERROR";
+std::string exec(const char* cmd)
+{
     char buffer[128];
+    FILE* pipe;
     std::string result = "";
-    while(!feof(pipe)) {
-        if(fgets(buffer, 128, pipe) != NULL)
-            result += buffer;
+
+    pipe = popen(cmd, "r");
+
+    if (!pipe)
+    {
+        return "ERROR";
     }
+
+    while(!feof(pipe))
+    {
+        if(fgets(buffer, 128, pipe) != NULL)
+        {
+            result += buffer;
+        }
+    }
+
     pclose(pipe);
+
     return result;
 }
 
