@@ -112,10 +112,13 @@ std::vector<std::string> split(const std::string &s,
 }
 
 
-void checkVideInfo(Jzon::Object params, float *duration, float *frames)
+void checkVideInfo(Jzon::Object params,
+                   float *duration,
+                   float *frames,
+                   std::string *filetype)
 {
     const char *check_info_cmd;
-    std::vector<std::string> info_result, times;
+    std::vector<std::string> info_result, file_result, times;
     std::string::size_type string_size_type;
 
     check_info_cmd = "python check_info.py";
@@ -130,6 +133,10 @@ void checkVideInfo(Jzon::Object params, float *duration, float *frames)
 
     // set frames
     *frames = std::stof(info_result[1], &string_size_type);
+
+    // set filetype
+    file_result = split(params.Get("filename").ToString(), '.');
+    *filetype = file_result[file_result.size() - 1];
 }
 
 
@@ -172,6 +179,7 @@ int main(int argc, char* argv[])
     Jzon::Object params;
     float duration = 0.0;
     float frames = 0.0;
+    std::string filetype = "";
 
     // Read parameters from the JSON file
     Jzon::FileReader::ReadFile("params.json", params);
@@ -183,12 +191,12 @@ int main(int argc, char* argv[])
     }
 
     // Grab the neccesary info from the video file
-    checkVideInfo(params, &duration, &frames);
+    checkVideInfo(params, &duration, &frames, &filetype);
 
     // Get frames of video
     extractFrames(params.Get("filename").ToString(), frames);
 
-    compileVideo("video2.mp4", frames);
+    compileVideo("./resources/output." + filetype, frames);
 
     return SUCCESS;
 }
