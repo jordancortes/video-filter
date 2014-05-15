@@ -25,6 +25,7 @@ void encodeOneStep(const char* filename, std::vector<unsigned char>& image, unsi
 void sepiaFilter(std::vector<unsigned char> *image, unsigned width, unsigned height){
 	float inRed, inGreen, inBlue;
 	for(unsigned y = 0; y < height*4; y++)
+		#pragma vector always
 		for(unsigned x = 0; x < width*4; x++)
 		{
 			int pos = width * y + x;
@@ -84,6 +85,7 @@ void sepiaFilter(std::vector<unsigned char> *image, unsigned width, unsigned hei
 void grayFilter(std::vector<unsigned char> *image, unsigned width, unsigned height){
 	float inRed, inGreen, inBlue;
 	for(unsigned y = 0; y < height*4; y++)
+		//#pragma vector always
 		for(unsigned x = 0; x < width*4; x = x + 4)
 		{
 			int pos = width * y + x;
