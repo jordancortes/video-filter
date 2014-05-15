@@ -133,6 +133,40 @@ void checkVideInfo(Jzon::Object params, float *duration, float *frames)
 }
 
 
+void extractFrames(std::string filename, float frames)
+{
+    std::string extract_frames_cmd;
+    std::stringstream ss_frames;
+
+    // Convert float to string
+    ss_frames << frames;
+
+    // Build code
+    extract_frames_cmd = "ffmpeg -i " + filename +
+                         " -r " + ss_frames.str() +
+                         " ./resources/video-filter-%03d.png";
+
+    exec(extract_frames_cmd.c_str());
+}
+
+
+void compileVideo(std::string filename, float frames)
+{
+    std::string extract_frames_cmd;
+    std::stringstream ss_frames;
+
+    // Convert float to string
+    ss_frames << frames;
+
+    // Build code
+    extract_frames_cmd = "ffmpeg -f image2 -r " + ss_frames.str() +
+                         " -i \"./resources/video-filter-%03d.png\" " +
+                         filename;
+
+    exec(extract_frames_cmd.c_str());
+}
+
+
 int main(int argc, char* argv[])
 {
     Jzon::Object params;
@@ -150,6 +184,11 @@ int main(int argc, char* argv[])
 
     // Grab the neccesary info from the video file
     checkVideInfo(params, &duration, &frames);
+
+    // Get frames of video
+    extractFrames(params.Get("filename").ToString(), frames);
+
+    compileVideo("video2.mp4", frames);
 
     return SUCCESS;
 }
