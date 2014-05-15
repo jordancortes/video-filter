@@ -1,4 +1,5 @@
 #include "Jzon.h"
+#include "filters.h"
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -124,7 +125,8 @@ std::vector<std::string> split(const std::string &s,
 void checkVideInfo(Jzon::Object params,
                    float *duration,
                    float *frames,
-                   std::string *filetype)
+                   std::string *filetype,
+                   std::string *image_sufix)
 {
     const char *check_info_cmd;
     std::vector<std::string> info_result, file_result, times;
@@ -146,10 +148,13 @@ void checkVideInfo(Jzon::Object params,
     // set filetype
     file_result = split(params.Get("filename").ToString(), '.');
     *filetype = file_result[file_result.size() - 1];
+
+    // set image prefix
+    *image_sufix = params.Get("images").Get("sufix").ToString();
 }
 
 
-void extractFrames(std::string filename, float frames)
+void extractFrames(std::string filename, float frames, std::string image_sufix)
 {
     std::string extract_frames_cmd;
     std::stringstream ss_frames;
@@ -160,13 +165,13 @@ void extractFrames(std::string filename, float frames)
     // Build code
     extract_frames_cmd = "ffmpeg -i " + filename +
                          " -r " + ss_frames.str() +
-                         " ./resources/video-filter-%03d.png";
+                         " ./resources/%03d." + image_sufix;
 
     exec(extract_frames_cmd.c_str());
 }
 
 
-void compileVideo(std::string filename, float frames)
+void compileVideo(std::string filename, float frames, std::string image_sufix)
 {
     std::string extract_frames_cmd;
     std::stringstream ss_frames;
@@ -176,7 +181,7 @@ void compileVideo(std::string filename, float frames)
 
     // Build code
     extract_frames_cmd = "ffmpeg -f image2 -r " + ss_frames.str() +
-                         " -i \"./resources/video-filter-%03d.png\" " +
+                         " -i \"./resources/%03d." + image_sufix + "\" " +
                          filename;
 
     exec(extract_frames_cmd.c_str());
@@ -208,6 +213,7 @@ int main(int argc, char* argv[])
     float duration = 0.0;
     float frames = 0.0;
     std::string filetype = "";
+    std::string image_sufix = "";
     pthread_t threads[THREADS];
     pthread_attr_t attr;
     int thread_result;
@@ -223,7 +229,11 @@ int main(int argc, char* argv[])
     }
 
     // Grab the neccesary info from the video file
-    checkVideInfo(params, &duration, &frames, &filetype);
+    checkVideInfo(params,
+                  &duration,
+                  &frames,
+                  &filetype,
+                  &image_sufix);
 
     pthread_mutex_init(&mutex_frame, NULL);
 
@@ -241,7 +251,7 @@ int main(int argc, char* argv[])
     }
 
     // Get frames of video
-    extractFrames(params.Get("filename").ToString(), frames);
+    extractFrames(params.Get("filename").ToString(), frames, image_sufix);
 
     // Set the end of the frames
     main_thread_status = MT_END;
@@ -254,7 +264,7 @@ int main(int argc, char* argv[])
     }
 
     // Recompile the video
-    compileVideo("./resources/output." + filetype, frames);
+    compileVideo("./resources/output." + filetype, frames, image_sufix);
 
     /* Last thing that main() should do */
     pthread_mutex_destroy(&mutex_frame);
