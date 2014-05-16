@@ -4,19 +4,22 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <unistd.h>
 
 #define SUCCESS 0
 #define ERROR   1
-#define THREADS 1
+#define THREADS 3
 #define MT_BEGIN 0
 #define MT_END  1
 #define SEPIA   0
-#define BN      1
+#define BW      1
 
 int main_thread_status = MT_BEGIN;
 pthread_mutex_t mutex_frame;
 int actual_frame = 1;
+int total_frames = 0;
 int filter_type;
+std::string image_sufix;
 
 int checkParameters(Jzon::Object params)
 {
@@ -165,7 +168,7 @@ void extractFrames(std::string filename, float frames, std::string image_sufix)
     // Build code
     extract_frames_cmd = "ffmpeg -i " + filename +
                          " -r " + ss_frames.str() +
-                         " ./resources/%03d." + image_sufix;
+                         " ./resources/tmp/%d." + image_sufix;
 
     exec(extract_frames_cmd.c_str());
 }
@@ -181,7 +184,7 @@ void compileVideo(std::string filename, float frames, std::string image_sufix)
 
     // Build code
     extract_frames_cmd = "ffmpeg -f image2 -r " + ss_frames.str() +
-                         " -i \"./resources/%03d." + image_sufix + "\" " +
+                         " -i \"./resources/tmp/%d." + image_sufix + "\" " +
                          filename;
 
     exec(extract_frames_cmd.c_str());
@@ -190,17 +193,50 @@ void compileVideo(std::string filename, float frames, std::string image_sufix)
 void *applyFilter(void *threadID)
 {
     long tID;
-    double this_frame;
+    int this_frame;
     tID = (long)threadID;
+    std::string filename;
+    std::string s_this_frame;
 
-    while(main_thread_status != MT_END)
+    while(main_thread_status != MT_END || actual_frame < total_frames)
     {
+        std::vector<unsigned char> image;
+        unsigned width, height;
+
         // Lock a mutex prior to updating the value
         pthread_mutex_lock (&mutex_frame);
-        this_frame = actual_frame++;
+        this_frame = actual_frame;
+        actual_frame = actual_frame + 1;
         pthread_mutex_unlock (&mutex_frame);
 
-        printf("%lf\n", this_frame);
+        s_this_frame = std::to_string(this_frame);
+
+        filename = "./resources/tmp/" + s_this_frame + "." + image_sufix;
+
+        // verify that the file exists
+        while (ERROR ==
+               decodeOneStep(filename.c_str(),&image, &width, &height)
+               && main_thread_status == MT_BEGIN)
+        {
+            // wait 0.1 seconds until the file exists
+            usleep(100000);
+        }
+
+        switch(filter_type)
+        {
+            case SEPIA:
+            {
+                sepiaFilter(&image, width, height);
+            }
+                break;
+            case BW:
+            {
+                grayFilter(&image, width, height);
+            }
+                break;
+        }
+
+        encodeOneStep(filename.c_str(), image, width, height);
     }
 
     pthread_exit(NULL);
@@ -213,11 +249,12 @@ int main(int argc, char* argv[])
     float duration = 0.0;
     float frames = 0.0;
     std::string filetype = "";
-    std::string image_sufix = "";
+    std::string images_count;
     pthread_t threads[THREADS];
     pthread_attr_t attr;
     int thread_result;
     void *status;
+    clock_t start,end;
 
     // Read parameters from the JSON file
     Jzon::FileReader::ReadFile("params.json", params);
@@ -235,11 +272,16 @@ int main(int argc, char* argv[])
                   &filetype,
                   &image_sufix);
 
+    // set filter type
+    filter_type = params.Get("filter").ToInt();
+
     pthread_mutex_init(&mutex_frame, NULL);
 
     // Initialize and set thread detached attribute
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
+    start=clock();
 
     // With p_threads calls the filter method for each image
     for (int i = 0; i < THREADS; i++)
@@ -253,6 +295,11 @@ int main(int argc, char* argv[])
     // Get frames of video
     extractFrames(params.Get("filename").ToString(), frames, image_sufix);
 
+    // set total frames
+    images_count = exec("ls -1 ./resources/tmp/ | wc -l");
+
+    total_frames = std::stoi(images_count);
+
     // Set the end of the frames
     main_thread_status = MT_END;
 
@@ -265,6 +312,10 @@ int main(int argc, char* argv[])
 
     // Recompile the video
     compileVideo("./resources/output." + filetype, frames, image_sufix);
+
+    end=clock();
+
+    printf("Clock ticks: %ld\n", end-start);
 
     /* Last thing that main() should do */
     pthread_mutex_destroy(&mutex_frame);

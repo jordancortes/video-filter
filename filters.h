@@ -1,7 +1,7 @@
 #include "lodepng.h"
 #include <iostream>
 
-void decodeOneStep(const char* filename, std::vector<unsigned char> *image, unsigned *width, unsigned *height);
+int decodeOneStep(const char* filename, std::vector<unsigned char> *image, unsigned *width, unsigned *height);
 
 void encodeOneStep(const char* filename, std::vector<unsigned char>& image, unsigned width, unsigned height);
 
