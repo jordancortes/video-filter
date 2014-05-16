@@ -1,3 +1,5 @@
-/resources
 video-filter
-params.json
+.DS_Store
+resources/*.mp4
+resources/*.mov
+*.o
