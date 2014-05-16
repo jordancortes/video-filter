@@ -9,7 +9,6 @@
 
 #define SUCCESS 0
 #define ERROR   1
-#define THREADS 8
 #define MT_BEGIN 0
 #define MT_END  1
 #define SEPIA   0
@@ -44,6 +43,17 @@ int checkParameters(Jzon::Object params)
     catch (Jzon::NotFoundException e)
     {
         std::cout << "Parameter 'filter' missing." << std::endl;
+        return ERROR;
+    }
+
+    // Search for parameter 'image-sufix'
+    try
+    {
+        params.Get("images").Get("sufix").ToString();
+    }
+    catch (Jzon::NotFoundException e)
+    {
+        std::cout << "Parameter 'threads-video' missing." << std::endl;
         return ERROR;
     }
 
@@ -131,7 +141,8 @@ void checkVideInfo(Jzon::Object params,
                    float *duration,
                    float *frames,
                    std::string *filetype,
-                   std::string *image_sufix)
+                   std::string *image_sufix,
+                   int *threads_images)
 {
     const char *check_info_cmd;
     std::vector<std::string> info_result, file_result, times;
@@ -156,6 +167,9 @@ void checkVideInfo(Jzon::Object params,
 
     // set image prefix
     *image_sufix = params.Get("images").Get("sufix").ToString();
+
+    // set threads-images count
+    *threads_images = params.Get("threads").Get("images").ToInt();
 }
 
 
@@ -257,9 +271,9 @@ int main(int argc, char* argv[])
     float frames = 0.0;
     std::string filetype = "";
     std::string images_count;
-    pthread_t threads[THREADS];
     pthread_attr_t attr;
     int thread_result;
+    int threads_images;
     void *status;
     time_t start,end;
 
@@ -280,11 +294,14 @@ int main(int argc, char* argv[])
                   &duration,
                   &frames,
                   &filetype,
-                  &image_sufix);
+                  &image_sufix,
+                  &threads_images);
 
     // set filter type
     filter_type = params.Get("filter").ToInt();
 
+    // Create threads data
+    pthread_t threads[threads_images];
     pthread_mutex_init(&mutex_frame, NULL);
 
     // Initialize and set thread detached attribute
@@ -294,7 +311,7 @@ int main(int argc, char* argv[])
     time(&start);
 
     // With p_threads calls the filter method for each image
-    for (int i = 0; i < THREADS; i++)
+    for (int i = 0; i < threads_images; i++)
     {
         thread_result = pthread_create(&threads[i],
                                        &attr,
@@ -315,7 +332,7 @@ int main(int argc, char* argv[])
 
     /* Free attribute and wait for the other threads */
     pthread_attr_destroy(&attr);
-    for (int i = 0; i < THREADS; i++)
+    for (int i = 0; i < threads_images; i++)
     {
         thread_result = pthread_join(threads[i], &status);
     }
