@@ -1,6 +1,10 @@
 {
-    "filename" : "/Users/Dave/Desktop/Resources/part1.mov",
-    "filter" : "sepia",
+    "filename" : "./resources/video.mp4",
+    "images" :
+    {
+        "sufix" : "png"
+    },
+    "filter" : 0,
     "threads" :
     {
         "video": 1,

@@ -5,10 +5,11 @@
 #include <sstream>
 #include <vector>
 #include <unistd.h>
+#include <ctime>
 
 #define SUCCESS 0
 #define ERROR   1
-#define THREADS 3
+#define THREADS 1
 #define MT_BEGIN 0
 #define MT_END  1
 #define SEPIA   0
@@ -254,7 +255,10 @@ int main(int argc, char* argv[])
     pthread_attr_t attr;
     int thread_result;
     void *status;
-    clock_t start,end;
+    time_t start,end;
+
+
+    exec("rm ./resources/output.mp4");
 
     // Read parameters from the JSON file
     Jzon::FileReader::ReadFile("params.json", params);
@@ -281,7 +285,7 @@ int main(int argc, char* argv[])
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
-    start=clock();
+    time(&start);
 
     // With p_threads calls the filter method for each image
     for (int i = 0; i < THREADS; i++)
@@ -313,9 +317,11 @@ int main(int argc, char* argv[])
     // Recompile the video
     compileVideo("./resources/output." + filetype, frames, image_sufix);
 
-    end=clock();
+    time(&end);
 
-    printf("Clock ticks: %ld\n", end-start);
+    printf("Seconds: %lu\n", end-start );
+
+    exec("rm ./resources/tmp/*.png");
 
     /* Last thing that main() should do */
     pthread_mutex_destroy(&mutex_frame);
