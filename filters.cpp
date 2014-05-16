@@ -91,12 +91,32 @@ void grayFilter(std::vector<unsigned char> *image,
 		{
 			int pos = ( width * y + x ) * 4 ;
 			float newColor;
-				inRed = image->at(pos);
-				inGreen = image->at(pos+1);
-				inBlue = image->at(pos+2);
-				newColor = ( inRed + inGreen + inBlue ) / 3;
-				image->at(pos) = newColor;
-				image->at(pos + 1) = newColor;
-				image->at(pos + 2) = newColor;
+			inRed = image->at(pos);
+			inGreen = image->at(pos+1);
+			inBlue = image->at(pos+2);
+			newColor = ( inRed + inGreen + inBlue ) / 3;
+			image->at(pos) = newColor;
+			image->at(pos + 1) = newColor;
+			image->at(pos + 2) = newColor;
 		}
+}
+
+void invertedFilter(std::vector<unsigned char> *image,
+                unsigned width,
+                unsigned height)
+{
+    float inRed, inGreen, inBlue;
+    for(unsigned y = 0; y < height; y++)
+        #pragma simd
+        for(unsigned x = 0; x < width; x++)
+        {
+            int pos = ( width * y + x ) * 4 ;
+            float newColor;
+            inRed = image->at(pos);
+            inGreen = image->at(pos+1);
+            inBlue = image->at(pos+2);
+            image->at(pos) = 255 - inRed;
+            image->at(pos + 1) = 255 - inGreen;
+            image->at(pos + 2) = 255 - inBlue;
+        }
 }

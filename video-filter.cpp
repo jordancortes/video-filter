@@ -9,11 +9,12 @@
 
 #define SUCCESS 0
 #define ERROR   1
-#define THREADS 1
+#define THREADS 8
 #define MT_BEGIN 0
 #define MT_END  1
 #define SEPIA   0
 #define BW      1
+#define INVERTED 2
 
 int main_thread_status = MT_BEGIN;
 pthread_mutex_t mutex_frame;
@@ -233,6 +234,11 @@ void *applyFilter(void *threadID)
             case BW:
             {
                 grayFilter(&image, width, height);
+            }
+                break;
+            case INVERTED:
+            {
+                invertedFilter(&image, width, height);
             }
                 break;
         }

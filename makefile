@@ -2,7 +2,7 @@ CC=icc
 CGFLAGS=-c
 
 # For dev, to avoid recompiling everything delete 'clean'
-CGOPTION=clean
+CGOPTION=
 
 all: video-filter $(CGOPTION)
 
