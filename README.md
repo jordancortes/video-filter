@@ -8,10 +8,10 @@ Final project for the class Concurrent & Parallel Programming. The goal is to ge
 ## Filters available
 | Name          | Code |Preview |
 |:-------------:|:----:|:------:|
-| Original      | -    | ![Original Photo](http://cl.ly/image/0z2y243O273W/test_original.png) |
-| Sepia         | 0    | ![Sepia Photo](http://cl.ly/image/3B36190H192E/test_sepia.png) |
-| Black / White | 1    | ![Black & White Photo](http://cl.ly/image/3u2h3Y0Q1B2j/test_bw.png) |
-| Inverted      | 2    | N/A |
+| Original      | -    | ![Original Photo](http://cl.ly/image/261o2x2C2R2H/video_filter_original.png) |
+| Sepia         | 0    | ![Sepia Photo](http://cl.ly/image/190K0P2g2a27/video_filter_sepia.png) |
+| Black / White | 1    | ![Black & White Photo](http://cl.ly/image/3h3m1m2k2J2A/video_filter_blackwhite.png) |
+| Inverted      | 2    | ![Inverted Photo](http://cl.ly/image/3D1r3k090B0N/video_filter_inverted.png) |
 
 ## How to use
 
