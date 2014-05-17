@@ -96,7 +96,7 @@ std::string exec(const char* cmd)
         return "ERROR";
     }
 
-    while(!feof(pipe))
+    while (!feof(pipe))
     {
         if(fgets(buffer, 128, pipe) != NULL)
         {
@@ -214,7 +214,7 @@ void *applyFilter(void *threadID)
     std::string filename;
     std::string s_this_frame;
 
-    while(main_thread_status != MT_END || actual_frame < total_frames)
+    while (main_thread_status != MT_END || actual_frame < total_frames)
     {
         std::vector<unsigned char> image;
         unsigned width, height;
@@ -238,7 +238,7 @@ void *applyFilter(void *threadID)
             usleep(100000);
         }
 
-        switch(filter_type)
+        switch (filter_type)
         {
             case SEPIA:
             {
